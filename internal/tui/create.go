@@ -10,10 +10,6 @@ type CreateModel struct {
 	form        *huh.Form
 	styles      *Styles
 	cfg         *config.Config
-	Name        string
-	Description string
-	Visibility  string
-	ProfileName string
 }
 
 func NewCreateModel(styles *Styles, cfg *config.Config) CreateModel {
@@ -24,8 +20,8 @@ func NewCreateModel(styles *Styles, cfg *config.Config) CreateModel {
 		profileOpts = append(profileOpts, huh.NewOption(name, name))
 	}
 
-	m.ProfileName = cfg.DefaultProfile
-	m.Visibility = "public"
+	defaultProfile := cfg.DefaultProfile
+	defaultVisibility := "public"
 
 	m.form = huh.NewForm(
 		huh.NewGroup(
@@ -34,13 +30,11 @@ func NewCreateModel(styles *Styles, cfg *config.Config) CreateModel {
 				Title("Repository name").
 				Validate(func(s string) error {
 					return config.ValidateRepoName(s)
-				}).
-				Value(&m.Name),
+				}),
 
 			huh.NewInput().
 				Key("description").
-				Title("Description").
-				Value(&m.Description),
+				Title("Description"),
 
 			huh.NewSelect[string]().
 				Key("visibility").
@@ -49,13 +43,13 @@ func NewCreateModel(styles *Styles, cfg *config.Config) CreateModel {
 					huh.NewOption("Public", "public"),
 					huh.NewOption("Private", "private"),
 				).
-				Value(&m.Visibility),
+				Value(&defaultVisibility),
 
 			huh.NewSelect[string]().
 				Key("profile").
 				Title("Profile").
 				Options(profileOpts...).
-				Value(&m.ProfileName),
+				Value(&defaultProfile),
 
 			huh.NewConfirm().
 				Key("confirm").
@@ -93,9 +87,9 @@ func (m CreateModel) Confirmed() bool {
 }
 
 func (m CreateModel) IsPublic() bool {
-	return m.Visibility == "public"
+	return m.form.GetString("visibility") == "public"
 }
 
 func (m CreateModel) Profile() config.Profile {
-	return m.cfg.Profiles[m.ProfileName]
+	return m.cfg.Profiles[m.form.GetString("profile")]
 }

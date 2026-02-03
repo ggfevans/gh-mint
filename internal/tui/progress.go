@@ -40,8 +40,8 @@ func (m ProgressModel) startCreation() tea.Cmd {
 		}
 
 		opts := ghclient.CreateOpts{
-			Name:        m.create.Name,
-			Description: m.create.Description,
+			Name:        m.create.form.GetString("name"),
+			Description: m.create.form.GetString("description"),
 			Public:      m.create.IsPublic(),
 			Profile:     m.create.Profile(),
 			OnProgress:  func(s ghclient.StepStatus) {},
