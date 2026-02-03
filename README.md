@@ -40,7 +40,7 @@ Works as both an interactive TUI and as scriptable CLI subcommands.
 Requires the [GitHub CLI](https://cli.github.com/) (`gh`).
 
 ```bash
-gh extension install gvns/gh-repo-defaults
+gh extension install ggfevans/gh-repo-defaults
 ```
 
 ## Usage
@@ -70,7 +70,7 @@ gh repo-defaults create my-project --profile personal --private --description "A
 ### Apply a profile to an existing repo
 
 ```bash
-gh repo-defaults apply gvns/some-repo --profile oss
+gh repo-defaults apply ggfevans/some-repo --profile oss
 ```
 
 Updates settings, syncs labels, and applies branch protection to a repo that already exists.
