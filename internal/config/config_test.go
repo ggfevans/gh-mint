@@ -49,10 +49,10 @@ profiles:
 	if !ok {
 		t.Fatal("missing profile 'oss'")
 	}
-	if p.Settings.HasWiki {
+	if p.Settings.HasWiki == nil || *p.Settings.HasWiki {
 		t.Error("HasWiki should be false")
 	}
-	if !p.Settings.AllowSquashMerge {
+	if p.Settings.AllowSquashMerge == nil || !*p.Settings.AllowSquashMerge {
 		t.Error("AllowSquashMerge should be true")
 	}
 	if len(p.Labels.Items) != 2 {

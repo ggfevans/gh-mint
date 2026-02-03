@@ -26,16 +26,19 @@ type Profile struct {
 }
 
 type RepoSettings struct {
-	HasWiki                  bool   `yaml:"has_wiki" json:"has_wiki"`
-	HasProjects              bool   `yaml:"has_projects" json:"has_projects"`
-	HasDiscussions           bool   `yaml:"has_discussions" json:"has_discussions"`
-	DeleteBranchOnMerge      bool   `yaml:"delete_branch_on_merge" json:"delete_branch_on_merge"`
-	AllowSquashMerge         bool   `yaml:"allow_squash_merge" json:"allow_squash_merge"`
-	AllowMergeCommit         bool   `yaml:"allow_merge_commit" json:"allow_merge_commit"`
-	AllowRebaseMerge         bool   `yaml:"allow_rebase_merge" json:"allow_rebase_merge"`
+	HasWiki                  *bool  `yaml:"has_wiki" json:"has_wiki,omitempty"`
+	HasProjects              *bool  `yaml:"has_projects" json:"has_projects,omitempty"`
+	HasDiscussions           *bool  `yaml:"has_discussions" json:"has_discussions,omitempty"`
+	DeleteBranchOnMerge      *bool  `yaml:"delete_branch_on_merge" json:"delete_branch_on_merge,omitempty"`
+	AllowSquashMerge         *bool  `yaml:"allow_squash_merge" json:"allow_squash_merge,omitempty"`
+	AllowMergeCommit         *bool  `yaml:"allow_merge_commit" json:"allow_merge_commit,omitempty"`
+	AllowRebaseMerge         *bool  `yaml:"allow_rebase_merge" json:"allow_rebase_merge,omitempty"`
 	SquashMergeCommitTitle   string `yaml:"squash_merge_commit_title" json:"squash_merge_commit_title,omitempty"`
 	SquashMergeCommitMessage string `yaml:"squash_merge_commit_message" json:"squash_merge_commit_message,omitempty"`
 }
+
+// boolPtr is a helper for creating *bool values.
+func boolPtr(b bool) *bool { return &b }
 
 type LabelConfig struct {
 	ClearExisting bool    `yaml:"clear_existing"`
@@ -67,7 +70,7 @@ type BranchProtection struct {
 }
 
 func LoadFromFile(path string) (*Config, error) {
-	data, err := os.ReadFile(path)
+	info, err := os.Stat(path)
 	if err != nil {
 		if errors.Is(err, fs.ErrNotExist) {
 			return defaultConfig(), nil
@@ -75,16 +78,18 @@ func LoadFromFile(path string) (*Config, error) {
 		return nil, fmt.Errorf("reading config: %w", err)
 	}
 
-	if len(data) > maxConfigSize {
+	if info.Size() > int64(maxConfigSize) {
 		return nil, fmt.Errorf("config file exceeds maximum size of %d bytes", maxConfigSize)
 	}
 
-	info, err := os.Stat(path)
-	if err == nil {
-		perm := info.Mode().Perm()
-		if perm&0077 != 0 {
-			fmt.Fprintf(os.Stderr, "warning: config file %s has permissions %o, recommend 0600\n", path, perm)
-		}
+	perm := info.Mode().Perm()
+	if perm&0077 != 0 {
+		fmt.Fprintf(os.Stderr, "warning: config file %s has permissions %o, recommend 0600\n", path, perm)
+	}
+
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return nil, fmt.Errorf("reading config: %w", err)
 	}
 
 	var cfg Config
@@ -102,8 +107,8 @@ func defaultConfig() *Config {
 			"personal": {
 				Description: "Personal project - minimal config",
 				Settings: RepoSettings{
-					HasWiki: false, HasProjects: false,
-					DeleteBranchOnMerge: true, AllowSquashMerge: true, AllowMergeCommit: true,
+					HasWiki: boolPtr(false), HasProjects: boolPtr(false),
+					DeleteBranchOnMerge: boolPtr(true), AllowSquashMerge: boolPtr(true), AllowMergeCommit: boolPtr(true),
 				},
 				Labels: LabelConfig{
 					ClearExisting: true,
@@ -118,8 +123,9 @@ func defaultConfig() *Config {
 			"oss": {
 				Description: "Open source project defaults",
 				Settings: RepoSettings{
-					HasWiki: false, HasProjects: false,
-					DeleteBranchOnMerge: true, AllowSquashMerge: true,
+					HasWiki: boolPtr(false), HasProjects: boolPtr(false),
+					DeleteBranchOnMerge: boolPtr(true), AllowSquashMerge: boolPtr(true),
+					AllowMergeCommit: boolPtr(false), AllowRebaseMerge: boolPtr(false),
 				},
 				Labels: LabelConfig{
 					ClearExisting: true,
@@ -138,8 +144,8 @@ func defaultConfig() *Config {
 			"action": {
 				Description: "GitHub Action defaults",
 				Settings: RepoSettings{
-					HasWiki: false, HasProjects: false,
-					DeleteBranchOnMerge: true, AllowSquashMerge: true,
+					HasWiki: boolPtr(false), HasProjects: boolPtr(false),
+					DeleteBranchOnMerge: boolPtr(true), AllowSquashMerge: boolPtr(true),
 				},
 				Labels: LabelConfig{
 					ClearExisting: true,

@@ -28,18 +28,3 @@ func TestCreateRepoArgs_Private(t *testing.T) {
 		t.Errorf("missing --private flag: %v", args)
 	}
 }
-
-func TestUpdateSettingsArgs(t *testing.T) {
-	c := NewClient()
-	args := c.updateSettingsArgs("owner/repo", map[string]interface{}{
-		"has_wiki":     false,
-		"has_projects": false,
-	})
-	joined := strings.Join(args, " ")
-	if !strings.Contains(joined, "api") {
-		t.Errorf("missing api command: %v", args)
-	}
-	if !strings.Contains(joined, "PATCH") {
-		t.Errorf("missing PATCH method: %v", args)
-	}
-}

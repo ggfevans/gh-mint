@@ -42,6 +42,11 @@ var createCmd = &cobra.Command{
 			return err
 		}
 
+		desc := cmd.Flag("description").Value.String()
+		if err := config.ValidateDescription(desc); err != nil {
+			return err
+		}
+
 		public := createPublic
 		if createPrivate {
 			public = false
@@ -54,7 +59,7 @@ var createCmd = &cobra.Command{
 
 		opts := ghclient.CreateOpts{
 			Name:        name,
-			Description: cmd.Flag("description").Value.String(),
+			Description: desc,
 			Public:      public,
 			Profile:     profile,
 			Owner:       cfg.DefaultOwner,
@@ -80,6 +85,7 @@ func init() {
 	createCmd.Flags().StringVarP(&createProfile, "profile", "p", "", "Profile to apply (default: from config)")
 	createCmd.Flags().BoolVar(&createPublic, "public", false, "Create public repo")
 	createCmd.Flags().BoolVar(&createPrivate, "private", false, "Create private repo")
+	createCmd.MarkFlagsMutuallyExclusive("public", "private")
 	createCmd.Flags().String("description", "", "Repo description")
 	rootCmd.AddCommand(createCmd)
 }

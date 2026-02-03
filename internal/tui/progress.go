@@ -35,6 +35,9 @@ func (m ProgressModel) Init() tea.Cmd {
 func (m ProgressModel) startCreation() tea.Cmd {
 	return func() tea.Msg {
 		client := ghclient.NewClient()
+		if err := client.CheckInstalled(); err != nil {
+			return allDoneMsg{err: err}
+		}
 
 		opts := ghclient.CreateOpts{
 			Name:        m.create.Name,

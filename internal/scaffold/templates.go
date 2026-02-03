@@ -25,8 +25,14 @@ func ResolveTemplate(name string, userDir string) ([]byte, error) {
 		if err == nil {
 			absDir, _ := filepath.Abs(userDir)
 			if strings.HasPrefix(absUser, absDir+string(filepath.Separator)) {
-				if data, err := os.ReadFile(absUser); err == nil {
-					return data, nil
+				// Resolve symlinks to prevent escape via symlink
+				if realPath, err := filepath.EvalSymlinks(absUser); err == nil {
+					realDir, _ := filepath.EvalSymlinks(userDir)
+					if strings.HasPrefix(realPath, realDir+string(filepath.Separator)) {
+						if data, err := os.ReadFile(realPath); err == nil {
+							return data, nil
+						}
+					}
 				}
 			}
 		}

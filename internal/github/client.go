@@ -28,10 +28,6 @@ func (c *Client) CheckInstalled() error {
 	return nil
 }
 
-func (c *Client) buildArgs(args ...string) []string {
-	return args
-}
-
 func (c *Client) run(args ...string) (string, error) {
 	cmd := exec.Command(c.ghPath, args...)
 	var stdout, stderr bytes.Buffer
@@ -44,6 +40,3 @@ func (c *Client) run(args ...string) (string, error) {
 	return strings.TrimSpace(stdout.String()), nil
 }
 
-func (c *Client) RunJSON(args ...string) (string, error) {
-	return c.run(args...)
-}

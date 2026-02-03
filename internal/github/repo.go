@@ -24,10 +24,6 @@ func (c *Client) CreateRepo(name, description string, public bool) (string, erro
 	return out, nil
 }
 
-func (c *Client) updateSettingsArgs(nwo string, settings map[string]interface{}) []string {
-	return []string{"api", fmt.Sprintf("repos/%s", nwo), "-X", "PATCH", "--input", "-"}
-}
-
 func (c *Client) UpdateSettings(nwo string, settings map[string]interface{}) error {
 	body, err := json.Marshal(settings)
 	if err != nil {

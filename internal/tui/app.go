@@ -1,6 +1,8 @@
 package tui
 
 import (
+	"fmt"
+
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/gvns/gh-repo-defaults/internal/config"
@@ -87,6 +89,10 @@ func (a App) updateMode(msg tea.Msg) (tea.Model, tea.Cmd) {
 			a.screen = screenCreate
 			a.create = NewCreateModel(a.styles, a.config)
 			return a, a.create.Init()
+		case modeApply:
+			// Apply requires owner/repo arg; direct user to CLI
+			fmt.Println("Use the CLI for apply: gh repo-defaults apply <owner/repo> --profile <name>")
+			return a, tea.Quit
 		case modeProfiles:
 			return a, tea.Quit
 		}

@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"text/tabwriter"
 
 	"github.com/gvns/gh-repo-defaults/internal/config"
@@ -53,12 +54,17 @@ var profilesShowCmd = &cobra.Command{
 		fmt.Printf("Description: %s\n\n", p.Description)
 
 		fmt.Println("Settings:")
-		fmt.Printf("  Wiki: %v\n", p.Settings.HasWiki)
-		fmt.Printf("  Projects: %v\n", p.Settings.HasProjects)
-		fmt.Printf("  Delete branch on merge: %v\n", p.Settings.DeleteBranchOnMerge)
-		fmt.Printf("  Allow squash merge: %v\n", p.Settings.AllowSquashMerge)
-		fmt.Printf("  Allow merge commit: %v\n", p.Settings.AllowMergeCommit)
-		fmt.Printf("  Allow rebase merge: %v\n", p.Settings.AllowRebaseMerge)
+		printBoolSetting := func(label string, v *bool) {
+			if v != nil {
+				fmt.Printf("  %s: %v\n", label, *v)
+			}
+		}
+		printBoolSetting("Wiki", p.Settings.HasWiki)
+		printBoolSetting("Projects", p.Settings.HasProjects)
+		printBoolSetting("Delete branch on merge", p.Settings.DeleteBranchOnMerge)
+		printBoolSetting("Allow squash merge", p.Settings.AllowSquashMerge)
+		printBoolSetting("Allow merge commit", p.Settings.AllowMergeCommit)
+		printBoolSetting("Allow rebase merge", p.Settings.AllowRebaseMerge)
 		fmt.Println()
 
 		fmt.Printf("Labels (%d):\n", len(p.Labels.Items))
@@ -98,7 +104,7 @@ func loadConfig() (*config.Config, error) {
 	if err != nil {
 		return nil, err
 	}
-	configPath := home + "/.config/gh-repo-defaults/config.yaml"
+	configPath := filepath.Join(home, ".config", "gh-repo-defaults", "config.yaml")
 	return config.LoadFromFile(configPath)
 }
 

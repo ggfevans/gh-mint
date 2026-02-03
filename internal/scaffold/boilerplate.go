@@ -12,7 +12,7 @@ import (
 // PrepareBoilerplate resolves templates and writes them into targetDir.
 // Returns the list of destination paths that were written.
 func PrepareBoilerplate(cfg config.BoilerplateConfig, targetDir string, userTemplateDir string) ([]string, error) {
-	absTarget, err := filepath.Abs(targetDir)
+	absTarget, err := filepath.EvalSymlinks(targetDir)
 	if err != nil {
 		return nil, fmt.Errorf("resolving target dir: %w", err)
 	}
@@ -39,13 +39,10 @@ func PrepareBoilerplate(cfg config.BoilerplateConfig, targetDir string, userTemp
 			return nil, fmt.Errorf("resolving template for %q: %w", f.Dest, err)
 		}
 
-		// Create parent directories
-		destDir := filepath.Dir(absDest)
-		if err := os.MkdirAll(destDir, 0755); err != nil {
-			return nil, fmt.Errorf("creating directory %q: %w", destDir, err)
+		// Create parent directories and write file
+		if err := os.MkdirAll(filepath.Dir(absDest), 0755); err != nil {
+			return nil, fmt.Errorf("creating directory for %q: %w", f.Dest, err)
 		}
-
-		// Write file
 		if err := os.WriteFile(absDest, content, 0644); err != nil {
 			return nil, fmt.Errorf("writing %q: %w", f.Dest, err)
 		}

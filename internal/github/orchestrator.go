@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 
 	"github.com/gvns/gh-repo-defaults/internal/config"
 	"github.com/gvns/gh-repo-defaults/internal/scaffold"
@@ -71,16 +72,27 @@ func (c *Client) CreateWithDefaults(opts CreateOpts) (string, error) {
 		}
 	}
 
+	var errs []error
+
 	// Apply settings
-	settings := SettingsFromRepoSettings(opts.Profile.Settings)
-	err = c.UpdateSettings(nwo, settings)
-	opts.report("Applied repo settings", err)
+	settings, err := SettingsFromRepoSettings(opts.Profile.Settings)
+	if err != nil {
+		opts.report("Applied repo settings", err)
+		errs = append(errs, err)
+	} else {
+		err = c.UpdateSettings(nwo, settings)
+		opts.report("Applied repo settings", err)
+		if err != nil {
+			errs = append(errs, err)
+		}
+	}
 
 	// Sync labels
 	deleted, created, labelErrs := c.SyncLabels(nwo, opts.Profile.Labels)
 	var labelErr error
 	if len(labelErrs) > 0 {
 		labelErr = fmt.Errorf("%d label errors", len(labelErrs))
+		errs = append(errs, labelErr)
 	}
 	opts.report(fmt.Sprintf("Synced labels (-%d/+%d)", deleted, created), labelErr)
 
@@ -88,14 +100,23 @@ func (c *Client) CreateWithDefaults(opts CreateOpts) (string, error) {
 	if len(opts.Profile.Boilerplate.Files) > 0 {
 		err = c.scaffoldAndPush(nwo, opts.Profile.Boilerplate, opts.Name)
 		opts.report("Pushed boilerplate files", err)
+		if err != nil {
+			errs = append(errs, err)
+		}
 	}
 
 	// Branch protection
 	if opts.Profile.BranchProtection.Branch != "" {
 		err = c.SetBranchProtection(nwo, opts.Profile.BranchProtection)
 		opts.report("Set branch protection", err)
+		if err != nil {
+			errs = append(errs, err)
+		}
 	}
 
+	if len(errs) > 0 {
+		return url, fmt.Errorf("%d step(s) failed after repo creation", len(errs))
+	}
 	return url, nil
 }
 
@@ -111,8 +132,10 @@ func (c *Client) scaffoldAndPush(nwo string, bp config.BoilerplateConfig, repoNa
 		return fmt.Errorf("cloning repo: %w", err)
 	}
 
-	home, _ := os.UserHomeDir()
-	userTemplateDir := filepath.Join(home, ".config", "gh-repo-defaults", "templates")
+	var userTemplateDir string
+	if home, err := os.UserHomeDir(); err == nil {
+		userTemplateDir = filepath.Join(home, ".config", "gh-repo-defaults", "templates")
+	}
 
 	if _, err := scaffold.PrepareBoilerplate(bp, cloneDir, userTemplateDir); err != nil {
 		return fmt.Errorf("preparing boilerplate: %w", err)
@@ -139,17 +162,22 @@ func (c *Client) scaffoldAndPush(nwo string, bp config.BoilerplateConfig, repoNa
 }
 
 func splitRepoURL(url string) string {
-	prefix := "https://github.com/"
-	if len(url) > len(prefix) && url[:len(prefix)] == prefix {
-		return url[len(prefix):]
+	nwo, ok := strings.CutPrefix(url, "https://github.com/")
+	if !ok || nwo == "" {
+		return ""
 	}
-	return ""
+	return strings.TrimSuffix(nwo, "/")
 }
 
 // SettingsFromRepoSettings converts config settings to a map for the API.
-func SettingsFromRepoSettings(s config.RepoSettings) map[string]interface{} {
-	data, _ := json.Marshal(s)
+func SettingsFromRepoSettings(s config.RepoSettings) (map[string]interface{}, error) {
+	data, err := json.Marshal(s)
+	if err != nil {
+		return nil, fmt.Errorf("marshaling settings: %w", err)
+	}
 	var m map[string]interface{}
-	json.Unmarshal(data, &m)
-	return m
+	if err := json.Unmarshal(data, &m); err != nil {
+		return nil, fmt.Errorf("converting settings: %w", err)
+	}
+	return m, nil
 }
