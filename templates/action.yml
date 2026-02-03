@@ -1,0 +1,10 @@
+name: 'My Action'
+description: 'A GitHub Action'
+inputs:
+  example:
+    description: 'An example input'
+    required: false
+    default: ''
+runs:
+  using: 'node20'
+  main: 'dist/index.js'
