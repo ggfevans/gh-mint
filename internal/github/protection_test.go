@@ -3,7 +3,7 @@ package github
 import (
 	"testing"
 
-	"github.com/gvns/gh-repo-defaults/internal/config"
+	"github.com/ggfevans/gh-mint/internal/config"
 )
 
 func TestBranchProtectionPayload(t *testing.T) {

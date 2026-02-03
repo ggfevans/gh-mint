@@ -3,8 +3,8 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/gvns/gh-repo-defaults/internal/config"
-	ghclient "github.com/gvns/gh-repo-defaults/internal/github"
+	"github.com/ggfevans/gh-mint/internal/config"
+	ghclient "github.com/ggfevans/gh-mint/internal/github"
 	"github.com/spf13/cobra"
 )
 

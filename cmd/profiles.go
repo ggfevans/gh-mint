@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"text/tabwriter"
 
-	"github.com/gvns/gh-repo-defaults/internal/config"
+	"github.com/ggfevans/gh-mint/internal/config"
 	"github.com/spf13/cobra"
 )
 
@@ -104,7 +104,7 @@ func loadConfig() (*config.Config, error) {
 	if err != nil {
 		return nil, err
 	}
-	configPath := filepath.Join(home, ".config", "gh-repo-defaults", "config.yaml")
+	configPath := filepath.Join(home, ".config", "gh-mint", "config.yaml")
 	return config.LoadFromFile(configPath)
 }
 

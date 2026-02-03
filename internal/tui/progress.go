@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
-	ghclient "github.com/gvns/gh-repo-defaults/internal/github"
+	ghclient "github.com/ggfevans/gh-mint/internal/github"
 )
 
 type allDoneMsg struct {

@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/gvns/gh-repo-defaults/internal/config"
+	"github.com/ggfevans/gh-mint/internal/config"
 )
 
 // PrepareBoilerplate resolves templates and writes them into targetDir.

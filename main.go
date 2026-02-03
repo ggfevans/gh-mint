@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/gvns/gh-repo-defaults/cmd"
+	"github.com/ggfevans/gh-mint/cmd"
 )
 
 func main() {

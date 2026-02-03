@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/gvns/gh-repo-defaults/internal/config"
+	"github.com/ggfevans/gh-mint/internal/config"
 )
 
 func TestPrepareBoilerplate(t *testing.T) {

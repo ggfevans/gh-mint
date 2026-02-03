@@ -3,7 +3,7 @@ package tui
 import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/huh"
-	"github.com/gvns/gh-repo-defaults/internal/config"
+	"github.com/ggfevans/gh-mint/internal/config"
 )
 
 type CreateModel struct {

@@ -25,7 +25,7 @@ func NewModeModel(styles *Styles) ModeModel {
 		huh.NewGroup(
 			huh.NewSelect[modeChoice]().
 				Key("mode").
-				Title("gh repo-defaults").
+				Title("gh mint").
 				Description("What would you like to do?").
 				Options(
 					huh.NewOption("Create new repo", modeCreate),

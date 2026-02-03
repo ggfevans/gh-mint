@@ -8,8 +8,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/gvns/gh-repo-defaults/internal/config"
-	"github.com/gvns/gh-repo-defaults/internal/scaffold"
+	"github.com/ggfevans/gh-mint/internal/config"
+	"github.com/ggfevans/gh-mint/internal/scaffold"
 )
 
 // StepStatus represents the outcome of a single step.
@@ -121,7 +121,7 @@ func (c *Client) CreateWithDefaults(opts CreateOpts) (string, error) {
 }
 
 func (c *Client) scaffoldAndPush(nwo string, bp config.BoilerplateConfig, repoName string) error {
-	tmpDir, err := os.MkdirTemp("", "gh-repo-defaults-*")
+	tmpDir, err := os.MkdirTemp("", "gh-mint-*")
 	if err != nil {
 		return fmt.Errorf("creating temp dir: %w", err)
 	}
@@ -134,7 +134,7 @@ func (c *Client) scaffoldAndPush(nwo string, bp config.BoilerplateConfig, repoNa
 
 	var userTemplateDir string
 	if home, err := os.UserHomeDir(); err == nil {
-		userTemplateDir = filepath.Join(home, ".config", "gh-repo-defaults", "templates")
+		userTemplateDir = filepath.Join(home, ".config", "gh-mint", "templates")
 	}
 
 	if _, err := scaffold.PrepareBoilerplate(bp, cloneDir, userTemplateDir); err != nil {

@@ -4,12 +4,12 @@ import (
 	"fmt"
 
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/gvns/gh-repo-defaults/internal/tui"
+	"github.com/ggfevans/gh-mint/internal/tui"
 	"github.com/spf13/cobra"
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "gh-repo-defaults",
+	Use:   "gh-mint",
 	Short: "Create GitHub repos with consistent defaults",
 	Long:  "A gh CLI extension that creates GitHub repos and applies labels, settings, boilerplate, and branch protection from named profiles.",
 	RunE: func(cmd *cobra.Command, args []string) error {

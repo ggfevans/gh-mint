@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/gvns/gh-repo-defaults/internal/config"
+	"github.com/ggfevans/gh-mint/internal/config"
 )
 
 func TestCreateLabelArgs(t *testing.T) {

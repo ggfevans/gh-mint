@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/gvns/gh-repo-defaults/templates"
+	"github.com/ggfevans/gh-mint/templates"
 )
 
 // ResolveTemplate returns the content of a template file.

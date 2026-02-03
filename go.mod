@@ -1,4 +1,4 @@
-module github.com/gvns/gh-repo-defaults
+module github.com/ggfevans/gh-mint
 
 go 1.25.6
 
