@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"os/exec"
+
+	"github.com/ggfevans/gh-mint/internal/config"
 )
 
 func (c *Client) createRepoArgs(name, description string, public bool) []string {
@@ -25,6 +27,9 @@ func (c *Client) CreateRepo(name, description string, public bool) (string, erro
 }
 
 func (c *Client) UpdateSettings(nwo string, settings map[string]interface{}) error {
+	if err := config.ValidateNWO(nwo); err != nil {
+		return fmt.Errorf("invalid nwo: %w", err)
+	}
 	body, err := json.Marshal(settings)
 	if err != nil {
 		return fmt.Errorf("marshaling settings: %w", err)

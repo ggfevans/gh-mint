@@ -38,6 +38,12 @@ func (c *Client) SetBranchProtection(nwo string, bp config.BranchProtection) err
 	if bp.Branch == "" {
 		return nil
 	}
+	if err := config.ValidateNWO(nwo); err != nil {
+		return fmt.Errorf("invalid nwo: %w", err)
+	}
+	if err := config.ValidateBranchName(bp.Branch); err != nil {
+		return fmt.Errorf("invalid branch: %w", err)
+	}
 
 	payload := buildProtectionPayload(bp)
 	body, err := json.Marshal(payload)

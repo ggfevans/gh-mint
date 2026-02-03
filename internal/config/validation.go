@@ -2,7 +2,9 @@ package config
 
 import (
 	"fmt"
+	"path/filepath"
 	"regexp"
+	"strings"
 	"unicode"
 )
 
@@ -107,6 +109,12 @@ func ValidateProfile(name string, p Profile) error {
 		}
 		if f.Dest == "" {
 			return fmt.Errorf("profile %q: boilerplate file has empty dest", name)
+		}
+		if strings.Contains(f.Src, "..") || filepath.IsAbs(f.Src) {
+			return fmt.Errorf("profile %q: boilerplate src %q contains path traversal", name, f.Src)
+		}
+		if strings.Contains(f.Dest, "..") || filepath.IsAbs(f.Dest) {
+			return fmt.Errorf("profile %q: boilerplate dest %q contains path traversal", name, f.Dest)
 		}
 	}
 	if p.BranchProtection.Branch != "" {

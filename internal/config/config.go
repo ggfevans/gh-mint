@@ -97,6 +97,12 @@ func LoadFromFile(path string) (*Config, error) {
 		return nil, fmt.Errorf("parsing config: %w", err)
 	}
 
+	for name, p := range cfg.Profiles {
+		if err := ValidateProfile(name, p); err != nil {
+			return nil, fmt.Errorf("config validation: %w", err)
+		}
+	}
+
 	return &cfg, nil
 }
 
